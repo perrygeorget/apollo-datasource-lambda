@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/apollo-datasource-lambda.svg)](https://www.npmjs.com/package/apollo-datasource-lambda)
+
 # AWSLambdaDataSource
 
 Use [AWS Lambda](https://aws.amazon.com/lambda/) as an [Apollo DataSources](https://www.apollographql.com/docs/apollo-server/features/data-sources.html).
