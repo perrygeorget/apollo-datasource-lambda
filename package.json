@@ -1,0 +1,67 @@
+{
+  "name": "apollo-datasource-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda DataSource for Apollo GraphQL projects",
+  "main": "index.js",
+  "engines": {
+    "node": ">=10.6.0",
+    "npm": ">=6.1.0"
+  },
+  "scripts": {
+    "lint": "prettier '**/*.js' && eslint '**/*.js'",
+    "lint:fix": "prettier --write '**/*.js' && eslint --fix '**/*.js'",
+    "test": "jest"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/perrygeorget/apollo-datasource-lambda.git"
+  },
+  "keywords": [
+    "apollo",
+    "apollo-server",
+    "datasource",
+    "graphql",
+    "aws",
+    "lambda"
+  ],
+  "author": "George Perry",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/perrygeorget/apollo-datasource-lambda/issues"
+  },
+  "homepage": "https://github.com/perrygeorget/apollo-datasource-lambda#readme",
+  "dependencies": {
+    "apollo-datasource": "^0.6.4",
+    "apollo-server-caching": "latest",
+    "aws-sdk": "^2.600.0",
+    "bunyan": "^1.8.12",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^4.0.3",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1"
+  },
+  "peerDependencies": {
+    "graphql": "^14.0.2"
+  }
+}
