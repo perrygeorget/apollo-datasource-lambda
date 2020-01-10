@@ -67,4 +67,15 @@ describe("jest", () => {
     expect(response).toEqual(mockData);
     expect(cache.set).not.toBeCalled();
   });
+
+  it("invoke do not alter invokeOptions", async () => {
+    const datasource = new AWSLambdaDataSource(awsOptions, invokeOptions);
+    datasource.initialize({ cache });
+    const response = await datasource.invoke(
+      JSON.stringify({ event: "hello" }),
+      0
+    );
+
+    expect(datasource.invokeOptions).not.toHaveProperty("Payload");
+  });
 });
