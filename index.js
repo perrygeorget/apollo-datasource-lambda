@@ -72,9 +72,12 @@ class AWSLambdaDataSource extends DataSource {
   }
 
   invoke(event, ttl = DEFAULT_TTL) {
-    const params = _.merge(this.invokeOptions, {
-      Payload: event
-    });
+    const params = _.merge(
+      {
+        Payload: event
+      },
+      this.invokeOptions
+    );
     logger.debug(params, "invoke params");
     const cacheKey = this.createCacheKey(params);
 
