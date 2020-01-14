@@ -12,13 +12,9 @@ const mockData = {
 
 const cache = {
   get: jest.fn(() => {
-    console.log("cache.get called");
-
     return Promise.resolve(null);
   }),
-  set: jest.fn(() => {
-    console.log("cache.set called");
-  })
+  set: jest.fn()
 };
 
 describe("jest", () => {

@@ -1,14 +1,15 @@
 const crypto = require("crypto");
 
-const _ = require("lodash");
+const _ = {
+  get: require("lodash.get"),
+  merge: require("lodash.merge")
+};
 const AWS = require("aws-sdk");
 const { DataSource } = require("apollo-datasource");
 const { InMemoryLRUCache } = require("apollo-server-caching");
 const bunyan = require("bunyan");
 
 const DEFAULT_TTL = 5;
-
-const { DEBUG } = process.env;
 
 const logger = bunyan.createLogger({
   name: "AWSLambdaDataSource",
@@ -18,13 +19,6 @@ const logger = bunyan.createLogger({
 class AWSLambdaDataSource extends DataSource {
   constructor(awsOptions = {}, invokeOptions) {
     super();
-
-    if (DEBUG && !_.has(awsOptions, "logger")) {
-      awsOptions["logger"] = bunyan.createLogger({
-        name: "AWSLambda",
-        level: "DEBUG"
-      });
-    }
 
     this.context;
     this.cache;
@@ -91,12 +85,12 @@ class AWSLambdaDataSource extends DataSource {
         .invoke(params)
         .on("success", response => {
           if (ttl === 0) {
-            logger.debug("will not cache");
+            logger.debug({ key: cacheKey }, "will not cache");
             return;
           }
 
-          logger.debug(response.data, "will cache");
-          this.cache.set(cacheKey, JSON.stringify(response.data), { ttl: ttl });
+          logger.debug({ key: cacheKey, ttl }, "will cache");
+          this.cache.set(cacheKey, JSON.stringify(response.data), { ttl });
         })
         .promise();
     });
