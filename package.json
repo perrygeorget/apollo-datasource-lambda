@@ -1,6 +1,6 @@
 {
   "name": "apollo-datasource-lambda",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "AWS Lambda DataSource for Apollo GraphQL projects",
   "main": "index.js",
   "engines": {
@@ -46,7 +46,7 @@
   "homepage": "https://github.com/perrygeorget/apollo-datasource-lambda#readme",
   "dependencies": {
     "apollo-datasource": "^0.6.4",
-    "apollo-server-caching": "latest",
+    "apollo-server-caching": "^0.5.2",
     "aws-sdk": "^2.600.0",
     "bunyan": "^1.8.12",
     "lodash.get": "^4.4.2",
