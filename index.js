@@ -7,32 +7,36 @@ const _ = {
 const AWS = require("aws-sdk");
 const { DataSource } = require("apollo-datasource");
 const { InMemoryLRUCache } = require("apollo-server-caching");
-const bunyan = require("bunyan");
 
 const DEFAULT_TTL = 5;
-
-const logger = bunyan.createLogger({
-  name: "AWSLambdaDataSource",
-  level: _.get(process.env, "LOG_LEVEL", "INFO")
-});
 
 class AWSLambdaDataSource extends DataSource {
   constructor(awsOptions = {}, invokeOptions) {
     super();
 
-    this.context;
-    this.cache;
+    this.context = undefined;
+    this.cache = undefined;
     this.lambda = new AWS.Lambda(awsOptions);
     this.invokeOptions = invokeOptions;
+    this.logger = console;
   }
 
   initialize(config) {
     this.context = config.context;
-    this.cache = config.cache || new InMemoryLRUCache();
+    if (config.hasOwnProperty("cache")) {
+      this.cache = _.get(config, "cache");
+    } else {
+      this.cache = new InMemoryLRUCache();
+    }
+    if (config.hasOwnProperty("logger")) {
+      this.logger = _.get(config, "logger");
+    } else {
+      this.logger = require("console-log-level")({ level: "info" });
+    }
   }
 
   createCacheKey(params) {
-    logger.debug(`createCacheKey got params: ${JSON.stringify(params)}`);
+    this.logger.debug(`createCacheKey got params: ${JSON.stringify(params)}`);
 
     const {
       ClientContext = null,
@@ -42,7 +46,7 @@ class AWSLambdaDataSource extends DataSource {
       Qualifier = null
     } = params;
 
-    logger.debug(Payload, "hashing payload");
+    this.logger.debug(Payload, "hashing payload");
 
     const hashedPayload = crypto
       .createHash("md5")
@@ -57,7 +61,7 @@ class AWSLambdaDataSource extends DataSource {
       `Payload:${hashedPayload}`
     ].join("_");
 
-    logger.debug(`raw cache key = "${key}"`);
+    this.logger.debug(`raw cache key = "${key}"`);
 
     return crypto
       .createHash("sha1")
@@ -72,12 +76,12 @@ class AWSLambdaDataSource extends DataSource {
       },
       this.invokeOptions
     );
-    logger.debug(params, "invoke params");
+    this.logger.debug(params, "invoke params");
     const cacheKey = this.createCacheKey(params);
 
     return this.cache.get(cacheKey).then(entry => {
       if (entry) {
-        logger.debug(`found in cache: ${cacheKey}`);
+        this.logger.debug(`found in cache: ${cacheKey}`);
         return Promise.resolve(JSON.parse(entry));
       }
 
@@ -85,11 +89,11 @@ class AWSLambdaDataSource extends DataSource {
         .invoke(params)
         .on("success", response => {
           if (ttl === 0) {
-            logger.debug({ key: cacheKey }, "will not cache");
+            this.logger.debug({ key: cacheKey }, "will not cache");
             return;
           }
 
-          logger.debug({ key: cacheKey, ttl }, "will cache");
+          this.logger.debug({ key: cacheKey, ttl }, "will cache");
           this.cache.set(cacheKey, JSON.stringify(response.data), { ttl });
         })
         .promise();
